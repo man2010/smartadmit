@@ -1,9 +1,9 @@
 "use client"
 
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Play, Sparkles, Zap } from "lucide-react"
-import { useRef } from "react"
+import { ArrowRight, Play, Sparkles, Zap, X } from "lucide-react"
+import { useRef, useState } from "react"
 
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
   const ref = useRef(null)
@@ -28,6 +28,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
 export function Hero() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
+  const [showVideo, setShowVideo] = useState(false)
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#F5F3FF] via-[#ede9fe] to-[#fce7f3]">
@@ -92,6 +93,7 @@ export function Hero() {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
+              onClick={() => setShowVideo(true)}
               className="glass-light inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold text-[#4F46E5]"
             >
               <Play className="h-5 w-5" />
@@ -186,6 +188,46 @@ export function Hero() {
           ))}
         </motion.div>
       </div>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
+            onClick={() => setShowVideo(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl bg-black"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setShowVideo(false)}
+                className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition hover:bg-black/80"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              {/* Video */}
+              <video
+                src="/demo.mp4"
+                controls
+                autoPlay
+                className="w-full aspect-video"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
